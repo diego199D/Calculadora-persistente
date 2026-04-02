@@ -40,13 +40,12 @@ async function cargarDatos() {
     ).join('');
 }
 
-// --- LÓGICA DE EDICIÓN (CORREGIDA CON FECHA) ---
+// --- LÓGICA DE EDICIÓN CORREGIDA PARA GUARDAR HORA ---
 function abrirEditar(id, nro, adelanto, ac, entradaOriginal) {
     document.getElementById('edit-nro').value = nro;
     document.getElementById('edit-adelanto').value = adelanto;
     document.getElementById('edit-ac').checked = ac;
     
-    // Ajuste de fecha para el input datetime-local
     const fecha = new Date(entradaOriginal);
     fecha.setMinutes(fecha.getMinutes() - fecha.getTimezoneOffset());
     document.getElementById('edit-entrada').value = fecha.toISOString().slice(0, 16);
@@ -54,24 +53,30 @@ function abrirEditar(id, nro, adelanto, ac, entradaOriginal) {
     document.getElementById('modalEditar').showModal();
     
     document.getElementById('btnGuardarEdit').onclick = async () => {
-        const nuevoNro = document.getElementById('edit-nro').value;
-        const nuevoAdelanto = document.getElementById('edit-adelanto').value;
-        const nuevoAc = document.getElementById('edit-ac').checked;
-        const nuevaEntrada = document.getElementById('edit-entrada').value;
+        const nNro = document.getElementById('edit-nro').value;
+        const nAdelanto = document.getElementById('edit-adelanto').value;
+        const nAc = document.getElementById('edit-ac').checked;
+        const nEntrada = document.getElementById('edit-entrada').value;
 
-        await _supabase.from('planillas').update({
-            nro_pieza: nuevoNro,
-            pago_adelantado: nuevoAdelanto,
-            ac: nuevoAc,
-            entrada: new Date(nuevaEntrada).toISOString() // Guarda la hora editada
+        // Intentamos actualizar la base de datos
+        const { error } = await _supabase.from('planillas').update({
+            nro_pieza: nNro,
+            pago_adelantado: nAdelanto,
+            ac: nAc,
+            entrada: new Date(nEntrada).toISOString()
         }).eq('id', id);
 
-        document.getElementById('modalEditar').close();
-        cargarDatos();
+        if (error) {
+            console.error("Error al guardar cambios:", error);
+            alert("No se guardó: " + error.message);
+        } else {
+            document.getElementById('modalEditar').close();
+            cargarDatos();
+        }
     };
 }
 
-// --- LÓGICA DE SALIDA (Tu Negocio) ---
+// --- LÓGICA DE SALIDA ---
 function abrirCobro(id, entradaStr, adelanto, ac, nro) {
     habitacionActual = { id, entradaStr, adelanto, ac };
     const ahora = new Date();
@@ -107,7 +112,7 @@ function recalcular() {
     let costoHab = 0;
 
     if (ac == 1 || ac == true) {
-        if (diffMin <= 76) costoHab = 35;
+        if (minutosTotales <= 76) costoHab = 35;
         else {
             costoHab = horas * 30;
             if (minutos >= 24) costoHab += 30;
@@ -148,17 +153,7 @@ async function registrarEntrada() {
     const adel = document.getElementById('adelanto').value || 0;
     const ac = document.getElementById('acCheck').checked;
     if(!nro) return alert("Pone el nro de pieza");
-    await _supabase.from('planillas').insert([{ 
-        nro_pieza: nro, 
-        ac: ac, 
-        pago_adelantado: adel, 
-        estado: 'ocupada',
-        entrada: new Date().toISOString() // Se asegura de registrar la entrada actual
-    }]);
-    
-    document.getElementById('nroPza').value = "";
-    document.getElementById('adelanto').value = "0";
-    document.getElementById('acCheck').checked = false;
+    await _supabase.from('planillas').insert([{ nro_pieza: nro, ac: ac, pago_adelantado: adel, estado: 'ocupada' }]);
     cargarDatos();
 }
 
