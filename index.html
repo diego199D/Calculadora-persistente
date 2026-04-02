@@ -33,17 +33,18 @@
     </div>
 
     <dialog id="modalEditar" class="modal">
-        <h2>Editar Habitación</h2>
-        <div class="modal-body">
-            <div class="row">PZA: <input type="number" id="edit-nro"></div>
-            <div class="row">A/C: <input type="checkbox" id="edit-ac"></div>
-            <div class="row">Pago: <input type="number" id="edit-adelanto"></div>
-        </div>
-        <div class="modal-footer">
-            <button onclick="document.getElementById('modalEditar').close()" class="btn-cerrar">Cancelar</button>
-            <button id="btnGuardarEdit" class="btn-azul">GUARDAR CAMBIOS</button>
-        </div>
-    </dialog>
+    <h2>Editar Habitación</h2>
+    <div class="modal-body">
+        <div class="row">PZA: <input type="number" id="edit-nro"></div>
+        <div class="row">Entrada: <input type="datetime-local" id="edit-entrada"></div>
+        <div class="row">A/C: <input type="checkbox" id="edit-ac"></div>
+        <div class="row">Pago: <input type="number" id="edit-adelanto"></div>
+    </div>
+    <div class="modal-footer">
+        <button onclick="document.getElementById('modalEditar').close()" class="btn-cerrar">Cancelar</button>
+        <button id="btnGuardarEdit" class="btn-azul">GUARDAR CAMBIOS</button>
+    </div>
+</dialog>
 
     <dialog id="modalSalida" class="modal">
         <h2 id="m-titulo">Habitación X</h2>

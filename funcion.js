@@ -26,7 +26,7 @@ async function cargarDatos() {
             <div class="card-ocupada">
                 <div><b>${p.nro_pieza}</b></div>
                 <div>
-                    <button class="btn-amarillo" onclick="abrirEditar('${p.id}', ${p.nro_pieza}, ${p.pago_adelantado}, ${p.ac})">Editar</button>
+                    <button class="btn-amarillo" onclick="abrirEditar('${p.id}', ${p.nro_pieza}, ${p.pago_adelantado}, ${p.ac}, '${p.entrada}')">Editar</button>
                     <button class="btn-verde" onclick="abrirCobro('${p.id}', '${p.entrada}', ${p.pago_adelantado}, ${p.ac}, ${p.nro_pieza})">Salida</button>
                 </div>
                 <div>${horaE}</div>
@@ -40,11 +40,16 @@ async function cargarDatos() {
     ).join('');
 }
 
-// --- LÓGICA DE EDICIÓN ---
-function abrirEditar(id, nro, adelanto, ac) {
+// --- LÓGICA DE EDICIÓN (CORREGIDA CON FECHA) ---
+function abrirEditar(id, nro, adelanto, ac, entradaOriginal) {
     document.getElementById('edit-nro').value = nro;
     document.getElementById('edit-adelanto').value = adelanto;
     document.getElementById('edit-ac').checked = ac;
+    
+    // Ajuste de fecha para el input datetime-local
+    const fecha = new Date(entradaOriginal);
+    fecha.setMinutes(fecha.getMinutes() - fecha.getTimezoneOffset());
+    document.getElementById('edit-entrada').value = fecha.toISOString().slice(0, 16);
     
     document.getElementById('modalEditar').showModal();
     
@@ -52,11 +57,13 @@ function abrirEditar(id, nro, adelanto, ac) {
         const nuevoNro = document.getElementById('edit-nro').value;
         const nuevoAdelanto = document.getElementById('edit-adelanto').value;
         const nuevoAc = document.getElementById('edit-ac').checked;
+        const nuevaEntrada = document.getElementById('edit-entrada').value;
 
         await _supabase.from('planillas').update({
             nro_pieza: nuevoNro,
             pago_adelantado: nuevoAdelanto,
-            ac: nuevoAc
+            ac: nuevoAc,
+            entrada: new Date(nuevaEntrada).toISOString() // Guarda la hora editada
         }).eq('id', id);
 
         document.getElementById('modalEditar').close();
@@ -141,7 +148,17 @@ async function registrarEntrada() {
     const adel = document.getElementById('adelanto').value || 0;
     const ac = document.getElementById('acCheck').checked;
     if(!nro) return alert("Pone el nro de pieza");
-    await _supabase.from('planillas').insert([{ nro_pieza: nro, ac: ac, pago_adelantado: adel, estado: 'ocupada' }]);
+    await _supabase.from('planillas').insert([{ 
+        nro_pieza: nro, 
+        ac: ac, 
+        pago_adelantado: adel, 
+        estado: 'ocupada',
+        entrada: new Date().toISOString() // Se asegura de registrar la entrada actual
+    }]);
+    
+    document.getElementById('nroPza').value = "";
+    document.getElementById('adelanto').value = "0";
+    document.getElementById('acCheck').checked = false;
     cargarDatos();
 }
 
