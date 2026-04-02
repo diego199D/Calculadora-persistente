@@ -1,0 +1,42 @@
+body { font-family: sans-serif; background: #fff; color: #333; margin: 20px; }
+.container { max-width: 800px; margin: auto; }
+
+/* Estilo Inputs */
+.seccion-inputs { margin-bottom: 30px; }
+.row { margin: 5px 0; }
+input[type="number"] { width: 50px; border: 1px solid #ccc; padding: 5px; }
+
+/* Botones */
+.btn-azul { background: #5a6eb1; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
+.btn-amarillo { background: #f3e5ab; border: none; padding: 5px 10px; border-radius: 4px; font-size: 12px; }
+.btn-verde { background: #d5e8d4; border: none; padding: 5px 10px; border-radius: 4px; font-size: 12px; }
+
+/* Grid de Libres/Sucias */
+.estados { display: flex; gap: 50px; margin-bottom: 20px; }
+.pzas-grid { display: flex; gap: 10px; }
+.circulo { background: #d5e8d4; padding: 10px 15px; border-radius: 10px; font-weight: bold; font-size: 18px; }
+.circulo.sucia { background: #f8cecc; }
+
+/* Cards Ocupadas */
+.cards-container { border-top: 2px solid #5a6eb1; padding-top: 10px; }
+.card-ocupada { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; align-items: center; padding: 15px; border-bottom: 1px solid #eee; text-align: center; }
+
+/* Modal */
+.modal { border: none; border-radius: 20px; padding: 30px; width: 350px; box-shadow: 0 0 20px rgba(0,0,0,0.2); }
+.modal::backdrop { background: rgba(0,0,0,0.5); }
+.precio-total { color: #2d8a2d; }
+.modal-footer { display: flex; justify-content: space-between; margin-top: 20px; }
+.btn-cerrar { background: #5a6eb1; color: white; border: none; padding: 10px; border-radius: 8px; }
+
+
+/* Estilo base para los modales */
+.modal {
+    border: none;
+    border-radius: 15px;
+    padding: 25px;
+    width: 320px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+.modal-body .row { margin: 15px 0; display: flex; justify-content: space-between; align-items: center; }
+.modal-body input { padding: 5px; width: 80px; }
+.modal-footer { margin-top: 20px; display: flex; justify-content: space-between; }

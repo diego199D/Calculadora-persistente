@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motel Mil Amores</title>
+    <link rel="stylesheet" href="estilo.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Planilla</h1>
+        
+        <div class="seccion-inputs">
+            <div class="row">Habitación: <input type="number" id="nroPza"></div>
+            <div class="row">A/C: <input type="checkbox" id="acCheck"></div>
+            <div class="row">Pago: <input type="number" id="adelanto" value="0"></div>
+            <button onclick="registrarEntrada()" class="btn-azul">Ingreso</button>
+        </div>
+
+        <div class="estados">
+            <div>
+                <h4>Habitaciones libres</h4>
+                <div id="libres" class="pzas-grid"></div>
+            </div>
+            <div>
+                <h4>Habitaciones sucias</h4>
+                <div id="sucias" class="pzas-grid"></div>
+            </div>
+        </div>
+
+        <div id="lista-ocupadas" class="cards-container"></div>
+    </div>
+
+    <dialog id="modalEditar" class="modal">
+        <h2>Editar Habitación</h2>
+        <div class="modal-body">
+            <div class="row">PZA: <input type="number" id="edit-nro"></div>
+            <div class="row">A/C: <input type="checkbox" id="edit-ac"></div>
+            <div class="row">Pago: <input type="number" id="edit-adelanto"></div>
+        </div>
+        <div class="modal-footer">
+            <button onclick="document.getElementById('modalEditar').close()" class="btn-cerrar">Cancelar</button>
+            <button id="btnGuardarEdit" class="btn-azul">GUARDAR CAMBIOS</button>
+        </div>
+    </dialog>
+
+    <dialog id="modalSalida" class="modal">
+        <h2 id="m-titulo">Habitación X</h2>
+        <div class="modal-body">
+            <p><strong>Entrada:</strong> <span id="m-entrada"></span></p>
+            <p><strong>Salida:</strong> <input type="datetime-local" id="m-input-salida"></p>
+            <hr>
+            <p>Pago Adelantado: <span id="m-adelanto"></span> bs</p>
+            <p>Tiempo Total: <span id="m-tiempo"></span></p>
+            <p>Precio Habitación: <span id="m-precio-hab"></span> bs</p>
+            <h3 class="precio-total">PRECIO TOTAL: <span id="m-total"></span> bs</h3>
+        </div>
+        <div class="modal-footer">
+            <button onclick="cerrarModal()" class="btn-cerrar">Cerrar</button>
+            <button id="btnDespachar" class="btn-azul">DESPACHAR</button>
+        </div>
+    </dialog>
+
+    <script src="funcion.js"></script>
+</body>
+</html>
