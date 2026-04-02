@@ -40,7 +40,6 @@ async function cargarDatos() {
     ).join('');
 }
 
-// --- LÓGICA DE EDICIÓN CORREGIDA PARA GUARDAR HORA ---
 function abrirEditar(id, nro, adelanto, ac, entradaOriginal) {
     document.getElementById('edit-nro').value = nro;
     document.getElementById('edit-adelanto').value = adelanto;
@@ -53,30 +52,21 @@ function abrirEditar(id, nro, adelanto, ac, entradaOriginal) {
     document.getElementById('modalEditar').showModal();
     
     document.getElementById('btnGuardarEdit').onclick = async () => {
-        const nNro = document.getElementById('edit-nro').value;
-        const nAdelanto = document.getElementById('edit-adelanto').value;
-        const nAc = document.getElementById('edit-ac').checked;
         const nEntrada = document.getElementById('edit-entrada').value;
-
-        // Intentamos actualizar la base de datos
         const { error } = await _supabase.from('planillas').update({
-            nro_pieza: nNro,
-            pago_adelantado: nAdelanto,
-            ac: nAc,
+            nro_pieza: document.getElementById('edit-nro').value,
+            pago_adelantado: document.getElementById('edit-adelanto').value,
+            ac: document.getElementById('edit-ac').checked,
             entrada: new Date(nEntrada).toISOString()
         }).eq('id', id);
 
-        if (error) {
-            console.error("Error al guardar cambios:", error);
-            alert("No se guardó: " + error.message);
-        } else {
+        if (!error) {
             document.getElementById('modalEditar').close();
             cargarDatos();
         }
     };
 }
 
-// --- LÓGICA DE SALIDA ---
 function abrirCobro(id, entradaStr, adelanto, ac, nro) {
     habitacionActual = { id, entradaStr, adelanto, ac };
     const ahora = new Date();
@@ -111,27 +101,36 @@ function recalcular() {
     let minutos = diffMin % 60;
     let costoHab = 0;
 
+    // LÓGICA DE NEGOCIO CORREGIDA
     if (ac == 1 || ac == true) {
-        if (minutosTotales <= 76) costoHab = 35;
-        else {
-            costoHab = horas * 30;
-            if (minutos >= 24) costoHab += 30;
+        if (diffMin <= 76) {
+            costoHab = 35; 
+        } else {
+            costoHab = horas * 30; 
+            // Corregido: antes decía minutosTotales, ahora usa minutos
+            if (minutos >= 24) costoHab += 30; 
             else if (minutos >= 17) costoHab += 15;
         }
     } else {
-        if (horas === 0 && minutos === 0) costoHab = 0;
-        else if (horas === 0) costoHab = 30;
-        else {
-            costoHab = 30 + (horas - 1) * 20;
+        if (horas === 0 && minutos === 0) {
+            costoHab = 0;
+        } else if (horas === 0) {
+            costoHab = 30; 
+        } else {
+            costoHab = 30; 
+            let horasExtras = horas - 1;
+            costoHab += horasExtras * 20; 
             if (minutos >= 24) costoHab += 20;
             else if (minutos >= 17) costoHab += 10;
         }
     }
 
-    const total = (costoHab - adelanto) < 0 ? 0 : (costoHab - adelanto);
+    let totalPagar = costoHab - adelanto;
+    if (totalPagar < 0) totalPagar = 0;
+
     document.getElementById('m-tiempo').innerText = `${horas}h ${minutos}m`;
     document.getElementById('m-precio-hab').innerText = costoHab.toFixed(2);
-    document.getElementById('m-total').innerText = total.toFixed(2);
+    document.getElementById('m-total').innerText = totalPagar.toFixed(2);
 }
 
 async function despachar(id) {
